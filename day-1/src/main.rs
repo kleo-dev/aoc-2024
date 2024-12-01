@@ -12,7 +12,6 @@ fn algo_append(v: &mut Vec<i32>, i: i32) {
 fn solution(s: &str) {
     let mut left: Vec<i32> = Vec::new();
     let mut right: Vec<i32> = Vec::new();
-    // let mut disc: Vec<u32> = Vec::new();
     let mut total = 0;
     for id_line in s.split('\n') {
         let id = id_line.split("   ").collect::<Vec<&str>>();
@@ -22,8 +21,14 @@ fn solution(s: &str) {
         algo_append(&mut right, r_dis);
     }
 
-    for i in 0..left.len() {
-        total += left[i].abs_diff(right[i]);
+    for l in left {
+        let mut c = 0;
+        for r in &right {
+            if l == *r {
+                c += 1;
+            }
+        }
+        total += l * c;
     }
 
     println!("{total}")
