@@ -1,23 +1,36 @@
 use std::fs;
 
-fn is_safe(report: Vec<i32>) -> bool {
+fn is_safe(report: Vec<i32>, problem_dampener: bool) -> bool {
     let mut order = 0;
+    let mut safe = true;
 
     for index in 1..report.len() {
         let diff = report[index].checked_sub(report[index - 1]).unwrap();
         let abs_diff = diff.abs();
 
         if abs_diff < 1 || abs_diff > 3 {
-            return false;
+            safe = false;
         };
 
-        if order == 0 {
+        if order == 0 && abs_diff > 0 {
             order = diff / abs_diff
-        } else if order != diff / abs_diff {
-            return false;
+        } else if diff != 0 && order != diff / abs_diff {
+            safe = false;
         }
     }
-    true
+
+    if !safe && problem_dampener {
+        for index in 0..report.len() {
+            let mut modified = report.clone();
+            modified.remove(index);
+            if is_safe(modified, false) {
+                return true;
+            }
+        }
+        false
+    } else {
+        safe
+    }
 }
 
 fn solution(s: &str) {
@@ -27,6 +40,7 @@ fn solution(s: &str) {
             line.split_whitespace()
                 .map(|val| val.parse::<i32>().unwrap())
                 .collect(),
+            true,
         ) {
             safe_reports += 1;
         }
